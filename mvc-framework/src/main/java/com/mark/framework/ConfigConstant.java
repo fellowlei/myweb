@@ -1,4 +1,4 @@
-package com.mark.framework.mvc;
+package com.mark.framework;
 
 /**
  * Created by Administrator on 2017/4/9.

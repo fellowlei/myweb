@@ -1,6 +1,6 @@
 package com.mark.framework.helper;
 
-import com.mark.framework.mvc.ConfigConstant;
+import com.mark.framework.ConfigConstant;
 import com.mark.framework.util.PropsUtil;
 
 import java.util.Properties;
