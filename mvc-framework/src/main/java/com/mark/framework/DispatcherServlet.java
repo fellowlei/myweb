@@ -51,13 +51,16 @@ public class DispatcherServlet extends HttpServlet {
 
     @Override
     protected void service(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException {
+        // 获取请求方法与请求路径
         String requestMethod = req.getMethod().toLowerCase();
         String requestPath = req.getPathInfo();
+        // 获取Action 处理器
         Handler handler = ControllerHelper.getHandler(requestMethod,requestPath);
         if(handler != null){
+            // 获取Controller 类及其 Bean 实例
             Class<?> controllerClass = handler.getControllerClass();
             Object controllerBean = BeanHelper.getBean(controllerClass);
-
+            // 创建请求参数对象
             Map<String,Object> paramMap = new HashMap<String, Object>();
             Enumeration<String> paramNames = req.getParameterNames();
             while(paramNames.hasMoreElements()){
@@ -84,7 +87,9 @@ public class DispatcherServlet extends HttpServlet {
             // 调用Action 方法
             Method actionMethod = handler.getActionMethod();
             Object result = ReflectionUtil.invokeMethod(controllerBean,actionMethod,param);
+            // 处理Action 返回值
             if(result instanceof View){
+                // 返回JSP 页面
                 View view = (View) result;
                 String path = view.getPath();
                 if(StringUtils.isNoneEmpty(path)){
@@ -99,6 +104,7 @@ public class DispatcherServlet extends HttpServlet {
                     }
                 }
             }else if(result instanceof Data){
+                // 返回 JSON 数据
                 Data data = (Data) result;
                 Object model = data.getModel();
                 if(model != null){
