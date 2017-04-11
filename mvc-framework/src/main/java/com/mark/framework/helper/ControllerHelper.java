@@ -20,7 +20,7 @@ public class ControllerHelper {
 
     static {
         // 获取所有的Controller类
-        Set<Class<?>> controllerClassSet = com.mark.framework.helper.ClassHelper.getControllerClassSet();
+        Set<Class<?>> controllerClassSet = ClassHelper.getControllerClassSet();
 
         if (CollectionUtils.isNotEmpty(controllerClassSet)) {
             // 遍历这些Controller类
