@@ -1,5 +1,6 @@
 package com.mark.proxy.bean;
 
+import com.mark.proxy.aspect.ano.Tag;
 import org.springframework.stereotype.Component;
 
 /**
@@ -7,6 +8,7 @@ import org.springframework.stereotype.Component;
  */
 @Component
 public class HelloImpl implements Hello {
+    @Tag
     public void say(String name) {
         System.out.println("Hello! " + name);
     }
