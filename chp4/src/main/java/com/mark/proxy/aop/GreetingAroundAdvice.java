@@ -1,4 +1,4 @@
-package com.mark.proxy.spring;
+package com.mark.proxy.aop;
 
 
 import org.aopalliance.intercept.MethodInterceptor;

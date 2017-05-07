@@ -1,0 +1,22 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<beans xmlns="http://www.springframework.org/schema/beans"
+       xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+       xmlns:context="http://www.springframework.org/schema/context"
+       xmlns:aop="http://www.springframework.org/schema/aop"
+       xsi:schemaLocation="http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans.xsd
+        http://www.springframework.org/schema/context http://www.springframework.org/schema/context/spring-context.xsd
+         http://www.springframework.org/schema/aop http://www.springframework.org/schema/aop/spring-aop.xsd">
+
+    <!-- 扫描指定包 （将带有Component 注解的类自动定义为 Spring Bean）-->
+    <context:component-scan base-package="com.mark.proxy"/>
+
+    <!-- 配置一个代理-->
+    <bean id="helloProxy" class="org.springframework.aop.framework.ProxyFactoryBean">
+        <property name="interfaces" value="com.mark.proxy.bean.Apology"></property><!-- 需要代理的接口-->
+        <property name="target" ref="helloImpl"></property><!-- 目标类-->
+        <property name="interceptorNames" value="helloIntroAdvice"/><!-- 引入增强-->
+
+        <property name="proxyTargetClass" value="true"></property><!-- 代理目标类(默认false，代理接口)-->
+    </bean>
+
+</beans>
