@@ -1,9 +1,7 @@
 package com.mark.framework.helper;
 
-import com.mark.framework.aop.Aspect;
-import com.mark.framework.aop.AspectProxy;
-import com.mark.framework.aop.Proxy;
-import com.mark.framework.aop.ProxyManager;
+import com.mark.framework.aop.*;
+import com.mark.framework.helper.BeanHelper;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -26,7 +24,7 @@ public class AopHelper {
                 Class<?> targetClass = targetEntry.getKey();
                 List<Proxy> proxyList = targetEntry.getValue();
                 Object proxy = ProxyManager.createProxy(targetClass, proxyList);
-                BeanHelper.setBean(targetClass,proxy);
+                BeanHelper.setBean(targetClass, proxy);
             }
         }catch (Exception e){
             logger.error("aop failure",e);
@@ -45,6 +43,21 @@ public class AopHelper {
     private static Map<Class<?>,Set<Class<?>>> createProxyMap(){
         Map<Class<?>,Set<Class<?>>> proxyMap = new HashMap<Class<?>, Set<Class<?>>>();
 
+//        Set<Class<?>> proxyClassSet = ClassHelper.getClassSetBySuper(AspectProxy.class);
+//        for(Class<?> proxyClass: proxyClassSet){
+//            if(proxyClass.isAnnotationPresent(Aspect.class)){
+//                Aspect aspect = proxyClass.getAnnotation(Aspect.class);
+//                Set<Class<?>> targetClassSet = createTargetClassSet(aspect);
+//                proxyMap.put(proxyClass,targetClassSet);
+//            }
+//        }
+
+        addAspectProxy(proxyMap);
+        addTransactionProxy(proxyMap);
+        return proxyMap;
+    }
+
+    public static  void addAspectProxy(Map<Class<?>,Set<Class<?>>> proxyMap){
         Set<Class<?>> proxyClassSet = ClassHelper.getClassSetBySuper(AspectProxy.class);
 
         for(Class<?> proxyClass: proxyClassSet){
@@ -54,7 +67,13 @@ public class AopHelper {
                 proxyMap.put(proxyClass,targetClassSet);
             }
         }
-        return proxyMap;
+    }
+
+
+
+    public static  void addTransactionProxy(Map<Class<?>,Set<Class<?>>> proxyMap){
+        Set<Class<?>> serviceClassSet= ClassHelper.getClassSetByAnnotation(Transaction.class);
+        proxyMap.put(TransactionProxy.class,serviceClassSet);
     }
 
     private static Map<Class<?>,List<Proxy>> createTargetMap(Map<Class<?>,Set<Class<?>>> proxyMap) throws Exception {
