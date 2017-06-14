@@ -1,5 +1,7 @@
 package com.mark.proxy.frame;
 
+import com.mark.proxy.threadlocal.Sequence;
+import com.mark.proxy.transaction.Transaction;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -41,6 +43,21 @@ public class AopHelper {
     private static Map<Class<?>,Set<Class<?>>> createProxyMap(){
         Map<Class<?>,Set<Class<?>>> proxyMap = new HashMap<Class<?>, Set<Class<?>>>();
 
+//        Set<Class<?>> proxyClassSet = ClassHelper.getClassSetBySuper(AspectProxy.class);
+//        for(Class<?> proxyClass: proxyClassSet){
+//            if(proxyClass.isAnnotationPresent(Aspect.class)){
+//                Aspect aspect = proxyClass.getAnnotation(Aspect.class);
+//                Set<Class<?>> targetClassSet = createTargetClassSet(aspect);
+//                proxyMap.put(proxyClass,targetClassSet);
+//            }
+//        }
+
+        addAspectProxy(proxyMap);
+        addTransactionProxy(proxyMap);
+        return proxyMap;
+    }
+
+    public static  void addAspectProxy(Map<Class<?>,Set<Class<?>>> proxyMap){
         Set<Class<?>> proxyClassSet = ClassHelper.getClassSetBySuper(AspectProxy.class);
 
         for(Class<?> proxyClass: proxyClassSet){
@@ -50,7 +67,13 @@ public class AopHelper {
                 proxyMap.put(proxyClass,targetClassSet);
             }
         }
-        return proxyMap;
+    }
+
+
+
+    public static  void addTransactionProxy(Map<Class<?>,Set<Class<?>>> proxyMap){
+        Set<Class<?>> serviceClassSet= ClassHelper.getClassSetByAnnotation(Transaction.class);
+        proxyMap.put(TransactionProxy.class,serviceClassSet);
     }
 
     private static Map<Class<?>,List<Proxy>> createTargetMap(Map<Class<?>,Set<Class<?>>> proxyMap) throws Exception {
