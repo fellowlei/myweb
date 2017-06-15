@@ -10,6 +10,7 @@ import java.util.Properties;
  */
 public class ConfigHelper {
     private static final Properties CONFIG_PROPS = PropsUtil.loadProps(ConfigConstant.CONFIG_FILE);
+    private static int appUploadLimit;
 
     public static String getJdbcDriver() {
         return PropsUtil.getString(CONFIG_PROPS, ConfigConstant.JDBC_DRIVER);

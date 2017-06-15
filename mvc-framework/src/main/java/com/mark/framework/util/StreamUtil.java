@@ -1,11 +1,11 @@
 package com.mark.framework.util;
 
+import org.apache.commons.io.IOUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import javax.servlet.ServletInputStream;
-import java.io.BufferedReader;
-import java.io.InputStreamReader;
+import java.io.*;
 
 /**
  * 流操作工具类
@@ -26,5 +26,21 @@ public class StreamUtil {
             throw new RuntimeException(e);
         }
         return sb.toString();
+    }
+
+    public static void copyStream(InputStream inputStream,OutputStream outputStream){
+        try {
+            IOUtils.copy(inputStream, outputStream);
+        } catch (IOException e) {
+            logger.error("copy stream failure",e);
+            throw new RuntimeException(e);
+        }finally {
+            try {
+                inputStream.close();
+                outputStream.close();
+            } catch (IOException e) {
+                logger.error("close stream failure",e);
+            }
+        }
     }
 }
