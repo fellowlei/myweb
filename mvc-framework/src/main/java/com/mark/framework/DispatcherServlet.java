@@ -5,11 +5,8 @@ import com.mark.framework.bean.Handler;
 import com.mark.framework.bean.Param;
 import com.mark.framework.bean.View;
 import com.mark.framework.helper.*;
-import com.mark.framework.util.CodecUtil;
 import com.mark.framework.util.JsonUtil;
 import com.mark.framework.util.ReflectionUtil;
-import com.mark.framework.util.StreamUtil;
-import org.apache.commons.lang3.ArrayUtils;
 import org.apache.commons.lang3.StringUtils;
 
 import javax.servlet.ServletConfig;
@@ -23,15 +20,13 @@ import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
 import java.io.PrintWriter;
 import java.lang.reflect.Method;
-import java.util.Enumeration;
-import java.util.HashMap;
 import java.util.Map;
 
 /**
  * 请求转发器
  * Created by Administrator on 2017/4/9.
  */
-@WebServlet(urlPatterns = "/*",loadOnStartup = 0)
+@WebServlet(urlPatterns = "/*", loadOnStartup = 0)
 public class DispatcherServlet extends HttpServlet {
     @Override
     public void init(ServletConfig config) throws ServletException {
@@ -49,51 +44,56 @@ public class DispatcherServlet extends HttpServlet {
 
     @Override
     protected void service(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException {
-        // 获取请求方法与请求路径
-        String requestMethod = req.getMethod().toLowerCase();
-        String requestPath = req.getPathInfo();
+        ServletHelper.init(req, resp);
+        try {
+            // 获取请求方法与请求路径
+            String requestMethod = req.getMethod().toLowerCase();
+            String requestPath = req.getPathInfo();
 
-        if(requestPath.equals("/favicon.ico")){
-            return;
-        }
-        // 获取Action 处理器
-        Handler handler = ControllerHelper.getHandler(requestMethod,requestPath);
-        if(handler != null){
-            // 获取Controller 类及其 Bean 实例
-            Class<?> controllerClass = handler.getControllerClass();
-            Object controllerBean = BeanHelper.getBean(controllerClass);
-
-            // 创建请求参数对象
-            Param param;
-            if(UploadHelper.isMultipart(req)){
-                param = UploadHelper.createParam(req);
-            }else{
-                param = RequestHelper.createParam(req);
+            if (requestPath.equals("/favicon.ico")) {
+                return;
             }
+            // 获取Action 处理器
+            Handler handler = ControllerHelper.getHandler(requestMethod, requestPath);
+            if (handler != null) {
+                // 获取Controller 类及其 Bean 实例
+                Class<?> controllerClass = handler.getControllerClass();
+                Object controllerBean = BeanHelper.getBean(controllerClass);
 
-            // 调用Action 方法
-            Method actionMethod = handler.getActionMethod();
-            Object result;
-            if(param.isEmpty()){
-                 result = ReflectionUtil.invokeMethod(controllerBean,actionMethod);
-            }else{
-                 result = ReflectionUtil.invokeMethod(controllerBean,actionMethod,param);
-            }
+                // 创建请求参数对象
+                Param param;
+                if (UploadHelper.isMultipart(req)) {
+                    param = UploadHelper.createParam(req);
+                } else {
+                    param = RequestHelper.createParam(req);
+                }
 
-            // 处理Action 返回值
-            if(result instanceof View){
-                // 返回JSP 页面
-                handleViewResult((View) result,req,resp);
-            }else if(result instanceof Data){
-                // 返回 JSON 数据
-                handleDataResult((Data) result,resp);
+                // 调用Action 方法
+                Method actionMethod = handler.getActionMethod();
+                Object result;
+                if (param.isEmpty()) {
+                    result = ReflectionUtil.invokeMethod(controllerBean, actionMethod);
+                } else {
+                    result = ReflectionUtil.invokeMethod(controllerBean, actionMethod, param);
+                }
+
+                // 处理Action 返回值
+                if (result instanceof View) {
+                    // 返回JSP 页面
+                    handleViewResult((View) result, req, resp);
+                } else if (result instanceof Data) {
+                    // 返回 JSON 数据
+                    handleDataResult((Data) result, resp);
+                }
             }
+        } finally {
+            ServletHelper.destroy();
         }
     }
 
-    private void  handleDataResult(Data data,HttpServletResponse response) throws IOException {
+    private void handleDataResult(Data data, HttpServletResponse response) throws IOException {
         Object model = data.getModel();
-        if(model != null){
+        if (model != null) {
             response.setContentType("application/json");
             response.setCharacterEncoding("UTF-8");
             PrintWriter writer = response.getWriter();
@@ -104,17 +104,17 @@ public class DispatcherServlet extends HttpServlet {
         }
     }
 
-    private void handleViewResult(View view,HttpServletRequest request,HttpServletResponse response) throws IOException, ServletException {
+    private void handleViewResult(View view, HttpServletRequest request, HttpServletResponse response) throws IOException, ServletException {
         String path = view.getPath();
-        if(StringUtils.isNoneEmpty(path)){
-            if(path.startsWith("/")){
+        if (StringUtils.isNoneEmpty(path)) {
+            if (path.startsWith("/")) {
                 response.sendRedirect(request.getContextPath() + path);
-            }else{
+            } else {
                 Map<String, Object> model = view.getModel();
-                for(Map.Entry<String,Object> entry:model.entrySet()){
-                    request.setAttribute(entry.getKey(),entry.getValue());
+                for (Map.Entry<String, Object> entry : model.entrySet()) {
+                    request.setAttribute(entry.getKey(), entry.getValue());
                 }
-                request.getRequestDispatcher(ConfigHelper.getAppJspPath() + path).forward(request,response);
+                request.getRequestDispatcher(ConfigHelper.getAppJspPath() + path).forward(request, response);
             }
         }
     }
