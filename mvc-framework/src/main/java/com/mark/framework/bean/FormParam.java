@@ -1,6 +1,7 @@
 package com.mark.framework.bean;
 
 /**
+ * 封装表单参数
  * Created by lulei on 2017/6/15.
  */
 public class FormParam {

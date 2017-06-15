@@ -38,6 +38,9 @@ public class UploadHelper {
      */
     private static ServletFileUpload servletFileUpload;
 
+    /**
+     * 初始化
+     */
     public static void init(ServletContext servletContext){
         File repository = (File) servletContext.getAttribute("javax.servlet.context.tempdir");
         servletFileUpload = new ServletFileUpload(new DiskFileItemFactory(DiskFileItemFactory.DEFAULT_SIZE_THRESHOLD,repository));
@@ -45,10 +48,18 @@ public class UploadHelper {
         servletFileUpload.setFileSizeMax(uploadLimit * 1024 * 1024);
     }
 
+    /**
+     * 判断请求是否为 multipart 类型
+     * @param request
+     * @return
+     */
     public static boolean isMultipart(HttpServletRequest request){
         return ServletFileUpload.isMultipartContent(request);
     }
 
+    /**
+     * 创建请求对象
+     */
     public static Param createParam(HttpServletRequest request) {
         List<FormParam> formParamList = new ArrayList<FormParam>();
         List<FileParam> fileParamList = new ArrayList<FileParam>();
@@ -84,6 +95,9 @@ public class UploadHelper {
         return new Param(formParamList,fileParamList);
     }
 
+    /**
+     * 上传文件
+     */
     public static void uploadFile(String basePath,FileParam fileParam){
         try{
             if(fileParam != null){
@@ -99,6 +113,9 @@ public class UploadHelper {
         }
     }
 
+    /**
+     * 批量上传文件
+     */
     public static void uploadFile(String basePath,List<FileParam> fileParamList){
         try{
             if(CollectionUtils.isNotEmpty(fileParamList)){

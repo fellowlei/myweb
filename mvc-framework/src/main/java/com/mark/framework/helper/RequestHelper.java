@@ -16,9 +16,13 @@ import java.util.Enumeration;
 import java.util.List;
 
 /**
+ * 请求助手类
  * Created by lulei on 2017/6/15.
  */
 public class RequestHelper {
+    /**
+     * 创建请求对象
+     */
     public static Param createParam(HttpServletRequest request) throws IOException {
         List<FormParam> formParamList = new ArrayList<FormParam>();
         formParamList.addAll(parseParameterNames(request));

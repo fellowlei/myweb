@@ -3,8 +3,8 @@ package com.mark.framework.bean;
 import java.io.InputStream;
 
 /**
- * Created by lulei on 2017/6/15.
  * 封装上传文件参数
+ * Created by lulei on 2017/6/15.
  */
 public class FileParam {
     private String fieldName;

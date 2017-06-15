@@ -28,6 +28,11 @@ public class StreamUtil {
         return sb.toString();
     }
 
+    /**
+     * 将输入流复制到输出流
+     * @param inputStream
+     * @param outputStream
+     */
     public static void copyStream(InputStream inputStream,OutputStream outputStream){
         try {
             IOUtils.copy(inputStream, outputStream);

@@ -8,6 +8,7 @@ import java.util.List;
 import java.util.Map;
 
 /**
+ * 请求参数对象
  * Created by Administrator on 2017/4/9.
  */
 public class Param {
@@ -63,10 +64,16 @@ public class Param {
         return fileMap;
     }
 
+    /**
+     * 获取所有上传文件
+     */
     public List<FileParam> getFileList(String fileNmae){
         return getFileMap().get(fileNmae);
     }
 
+    /**
+     * 获取唯一上传文件
+     */
     public FileParam getFile(String fileName){
         List<FileParam> fileParamList = getFileList(fileName);
         if(CollectionUtils.isNotEmpty(fileParamList) && fileParamList.size() ==1){
@@ -75,6 +82,9 @@ public class Param {
         return null;
     }
 
+    /**
+     * 验证参数是否为空
+     */
     public boolean isEmpty(){
         return CollectionUtils.isEmpty(formParamList) && CollectionUtils.isEmpty(fileParamList);
     }
